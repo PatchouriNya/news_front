@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻详情</title>
+</head>
+<style>
+    [v-cloak]{
+        display: none;
+    }
+    
+</style>
+<body>
+    <div id="app" v-cloak>
+        <h1>{{news.title}}</h1>
+        <h4>作者:{{news.author}}</h4>
+        <p>描述:{{news.desn}}</p>
+        <h5>　　{{news.body}}</h5>
+
+    </div>
+</body>
+<script src="/js/axios.js"></script>
+<script src="/js/vue.js"></script>
+<script src="/js/jquery.js"></script>
+<script>
+      const app = new Vue({
+        el:'#app',
+        data:{
+            news:[],
+            
+        },
+        mounted(){
+            axios.get('http://news.patchouri.club/api/v1/news').then(data=>{
+                this.news = data.data.data;
+                var id = GetQueryString("id");
+                for(i=0;i<=this.news.length;i++){
+                    if(this.news[i].id == id){
+                        this.news = this.news[i];
+                        break;
+                    }
+                }
+
+            })
+        },
+    });
+function GetQueryString(name)
+{
+     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+     var r = window.location.search.substr(1).match(reg);
+     if(r!=null)return  unescape(r[2]); return null;
+}
+// $(function(){
+//     alert(GetQueryString("id"));
+// });
+
+</script>
+</html>

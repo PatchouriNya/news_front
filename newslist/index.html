@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻列表</title>
+</head>
+<style>
+    *{
+        list-style: none;
+    }
+    a{
+        text-decoration: none;
+        color: blue;
+    }
+    body{
+        font-size: 14px;
+    }
+    [v-cloak]{
+        display: none;
+    }
+    
+</style>
+<body>
+    <div id="app">
+        <ul>
+            <li class="a" v-for="item in news" v-cloak @click="qwq(item.id)">
+                <a href="#">{{item.title}}</a>
+            </li>
+        </ul>
+    </div>
+    
+</body>
+<script src="/js/axios.js"></script>
+<script src="/js/vue.js"></script>
+<script src="/js/jquery.js"></script>
+<script>
+    const app = new Vue({
+        el:'#app',
+        data:{
+            news:[],
+            id:0,
+        },
+        methods:{
+            qwq(id){
+                $(window).attr('location','detail.html?id='+id);
+            }
+        },
+        mounted(){
+            axios.get('http://news.patchouri.club/api/v1/news').then(data=>{
+                this.news = data.data.data;
+                
+            })
+        },
+    });
+
+</script>
+</html>

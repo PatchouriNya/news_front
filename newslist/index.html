@@ -1,58 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>新闻列表</title>
-</head>
-<style>
-    *{
-        list-style: none;
+  </head>
+  <style>
+    * {
+      list-style: none;
     }
-    a{
-        text-decoration: none;
-        color: blue;
+    a {
+      text-decoration: none;
+      color: blue;
     }
-    body{
-        font-size: 14px;
+    body {
+      font-size: 14px;
     }
-    [v-cloak]{
-        display: none;
+    [v-cloak] {
+      display: none;
     }
-    
-</style>
-<body>
+  </style>
+  <body>
     <div id="app">
-        <ul>
-            <li class="a" v-for="item in news" v-cloak @click="qwq(item.id)">
-                <a href="#">{{item.title}}</a>
-            </li>
-        </ul>
+      <ul>
+        <li class="a" v-for="item in news" v-cloak @click="qwq(item.id)">
+          <router-link :to="{name:'detail',params:{id:item.id}}"
+            >{{item.title}}</router-link
+          >
+        </li>
+      </ul>
+      <router-view></router-view>
     </div>
-    
-</body>
-<script src="/js/axios.js"></script>
-<script src="/js/vue.js"></script>
-<script src="/js/jquery.js"></script>
-<script>
-    const app = new Vue({
-        el:'#app',
-        data:{
-            news:[],
-            id:0,
+  </body>
+  <script type="text/x-template" id="detail">
+    <div>
+        <h1>{{info.title}}</h1>
+        <h2>作者:{{info.author}}</h2>
+        <p>描述:{{info.desn}}</p>
+        <h3>{{info.body}}</h3>
+    </div>
+  </script>
+
+  <script src="/js/axios.js"></script>
+  <script src="/js/vue.js"></script>
+  <script src="/js/vue-router.js"></script>
+  <script src="/js/jquery.js"></script>
+  <script>
+    const Detail = {
+      template: "#detail",
+      data() {
+        return {
+          id: 0,
+          info: {},
+        };
+      },
+
+      mounted() {
+        this.getData();
+      },
+      // 侦听器
+      watch: {
+        $route(newVal, oldVal) {
+          this.getData();
         },
-        methods:{
-            qwq(id){
-                $(window).attr('location','detail.html?id='+id);
-            }
+      },
+
+      methods: {
+        getData() {
+          this.id = this.$route.params.id;
+          axios
+            .get("http://news.patchouri.club/api/v1/news/" + this.id)
+            .then((data) => {
+            //   console.log(data);
+              this.info = data.data.data;
+            });
         },
-        mounted(){
-            axios.get('http://news.patchouri.club/api/v1/news').then(data=>{
-                this.news = data.data.data;
-                
-            })
-        },
+      },
+    };
+
+    const routes = [{ path: "/detail/:id", component: Detail, name: "detail" }];
+
+    const router = new VueRouter({
+      routes,
+    //   mode:'history'
     });
 
-</script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        news: [],
+        id: 0,
+      },
+      router,
+      methods: {
+        qwq(id) {
+          // $(window).attr('location','detail.html?id='+id);
+        },
+      },
+      mounted() {
+        axios.get("http://news.patchouri.club/api/v1/news").then((data) => {
+          this.news = data.data.data;
+        });
+      },
+    });
+  </script>
 </html>
